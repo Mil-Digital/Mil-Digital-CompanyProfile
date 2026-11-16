@@ -1,0 +1,1360 @@
+/*
+ * MIL Digital look for the Payload admin: light, airy and on brand.
+ *
+ * Payload ships its styles inside `@layer payload-default`, so these
+ * unlayered rules win without !important. We only re-tint Payload's own
+ * variables and style its public class names; no core file is touched.
+ * Brand: MIL Brand Book 2025 (navy #1B3C7F, sky #00ADEE, amber #FAAF40).
+ */
+
+/* ── Tokens ─────────────────────────────────────────────────────── */
+
+:root {
+  --mil-blue: #1b3c7f;
+  --mil-blue-2: #1765c2;
+  --mil-sky: #00adee;
+  --mil-yellow: #faaf40;
+  --mil-gradient: linear-gradient(115deg, #1b3c7f 0%, #1765c2 48%, #00adee 100%);
+  --mil-glow: 0 10px 30px -12px rgb(23 101 194 / 0.55);
+  --mil-ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* Payload's grey scale, re-tinted towards MIL navy. Every surface,
+     border and text colour in the admin is derived from these. */
+  --color-base-0: #ffffff;
+  --color-base-50: #f5f7fb;
+  --color-base-100: #ebeff7;
+  --color-base-150: #dfe5f0;
+  --color-base-200: #d0d8e7;
+  --color-base-250: #bfc9dc;
+  --color-base-300: #aab6cc;
+  --color-base-350: #95a2bb;
+  --color-base-400: #808ea9;
+  --color-base-450: #6d7b97;
+  --color-base-500: #5c6a86;
+  --color-base-550: #4e5b76;
+  --color-base-600: #414d67;
+  --color-base-650: #364159;
+  --color-base-700: #2c364c;
+  --color-base-750: #232c3f;
+  --color-base-800: #1b2333;
+  --color-base-850: #141a27;
+  --color-base-900: #0e131d;
+  --color-base-950: #090c13;
+  --color-base-1000: #040609;
+
+  --style-radius-s: 6px;
+  --style-radius-m: 10px;
+  --style-radius-l: 16px;
+  --font-body: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --accessibility-outline: 2px solid var(--mil-sky);
+}
+
+::selection {
+  background: rgb(0 173 238 / 0.22);
+}
+
+/* ── Canvas: a soft brand mesh behind every page ───────────────── */
+
+.template-default,
+.template-default__wrap {
+  background-color: transparent;
+}
+
+.template-default {
+  background:
+    radial-gradient(1100px 620px at 105% -12%, rgb(0 173 238 / 0.13), transparent 62%),
+    radial-gradient(900px 560px at -8% 108%, rgb(27 60 127 / 0.1), transparent 60%),
+    radial-gradient(600px 380px at 55% 115%, rgb(250 175 64 / 0.07), transparent 65%),
+    var(--color-base-50);
+  background-attachment: fixed;
+}
+
+/* Page content rises in gently on every navigation */
+.template-default__wrap > * {
+  animation: mil-rise 0.55s var(--mil-ease) both;
+}
+
+/* ── Sidebar: deep MIL navy, so it reads apart from the light pages ── */
+
+/* lucide icons (stroke 1.8), used as masks so they take the text colour */
+$mil-nav-icons: (
+  "global-home": "<rect width='18' height='7' x='3' y='3' rx='1.5'/><rect width='9' height='7' x='3' y='14' rx='1.5'/><rect width='5' height='7' x='16' y='14' rx='1.5'/>",
+  "case-studies": "<path d='M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z'/><path d='M8 10v4'/><path d='M12 10v2'/><path d='M16 10v6'/>",
+  "clients": "<path d='M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z'/><path d='M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2'/><path d='M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2'/><path d='M10 6h4'/><path d='M10 10h4'/><path d='M10 14h4'/><path d='M10 18h4'/>",
+  "testimonials": "<path d='M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z'/><path d='M8 12a2 2 0 0 0 2-2V8H8'/><path d='M14 12a2 2 0 0 0 2-2V8h-2'/>",
+  "articles": "<path d='M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2'/><path d='M18 14h-8'/><path d='M15 18h-5'/><path d='M10 6h8v4h-8V6Z'/>",
+  "reports": "<path d='M3 3v18h18'/><path d='M18 17V9'/><path d='M13 17V5'/><path d='M8 17v-3'/>",
+  "jobs": "<rect width='20' height='14' x='2' y='7' rx='2'/><path d='M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16'/>",
+  "job-applications": "<path d='M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2'/><circle cx='9' cy='7' r='4'/><polyline points='16 11 18 13 22 9'/>",
+  "leads": "<polyline points='22 12 16 12 14 15 10 15 8 12 2 12'/><path d='M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z'/>",
+  "media": "<rect width='18' height='18' x='3' y='3' rx='2'/><circle cx='9' cy='9' r='2'/><path d='m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21'/>",
+  "users": "<path d='M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2'/><circle cx='9' cy='7' r='4'/><path d='M22 21v-2a4 4 0 0 0-3-3.87'/><path d='M16 3.13a4 4 0 0 1 0 7.75'/>",
+);
+
+.nav {
+  --nav-ink: rgb(255 255 255 / 0.74);
+  --nav-ink-strong: #fff;
+  --nav-muted: rgb(164 205 255 / 0.72);
+  color: var(--nav-ink);
+  background:
+    radial-gradient(420px 320px at 110% -6%, rgb(0 173 238 / 0.3), transparent 62%),
+    radial-gradient(360px 300px at -20% 104%, rgb(250 175 64 / 0.13), transparent 60%),
+    linear-gradient(180deg, #173675 0%, #10295f 48%, #0b1d47 100%);
+  border-right: 0;
+  border-left: 0;
+  box-shadow:
+    1px 0 0 rgb(255 255 255 / 0.06) inset,
+    18px 0 50px -30px rgb(11 29 71 / 0.5);
+
+  /* a faint grid, like the website's tech-paper backgrounds */
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+      linear-gradient(rgb(255 255 255 / 0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(255 255 255 / 0.035) 1px, transparent 1px);
+    background-size: 28px 28px;
+    mask-image: linear-gradient(180deg, #000, transparent 70%);
+  }
+}
+
+.nav__scroll {
+  position: relative;
+  scrollbar-width: thin;
+  scrollbar-color: rgb(255 255 255 / 0.18) transparent;
+}
+
+/* The menu button sits over the sidebar while it is open */
+.template-default--nav-open .template-default__nav-toggler {
+  color: #fff;
+
+  .stroke {
+    stroke: #fff;
+  }
+}
+
+/* Brand block (src/components/admin/NavBrand.tsx) */
+.mil-nav-brand {
+  width: 100%;
+  margin: 4px 0 22px;
+  padding: 16px;
+  border-radius: 16px;
+  background-color: rgb(255 255 255 / 0.08);
+  border: 1px solid rgb(255 255 255 / 0.1);
+  box-shadow: 0 1px 0 rgb(255 255 255 / 0.08) inset;
+
+  &__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  &__toggle {
+    display: grid;
+    flex-shrink: 0;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: 0;
+    border-radius: 10px;
+    cursor: pointer;
+    color: var(--nav-ink);
+    background: rgb(255 255 255 / 0.08);
+    transition:
+      background-color 0.25s var(--mil-ease),
+      color 0.25s var(--mil-ease),
+      transform 0.25s var(--mil-ease);
+
+    &:hover {
+      color: #fff;
+      background: rgb(0 173 238 / 0.3);
+    }
+
+    &:active {
+      transform: scale(0.94);
+    }
+  }
+
+  &__logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    img {
+      width: auto;
+      height: 30px;
+      filter: drop-shadow(0 6px 14px rgb(0 173 238 / 0.45));
+    }
+
+    span {
+      display: grid;
+      line-height: 1.2;
+    }
+
+    strong {
+      font-size: 15px;
+      letter-spacing: -0.01em;
+      color: #fff;
+    }
+
+    small {
+      font-size: 12px;
+      color: var(--nav-muted);
+    }
+  }
+
+  &__site {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 14px;
+    padding: 8px 12px;
+    border-radius: 999px;
+    font-size: 12.5px;
+    font-weight: 500;
+    color: #fff;
+    text-decoration: none;
+    background: rgb(255 255 255 / 0.08);
+    transition:
+      background-color 0.25s var(--mil-ease),
+      transform 0.25s var(--mil-ease);
+
+    svg {
+      margin-left: auto;
+      transition: transform 0.25s var(--mil-ease);
+    }
+
+    &:hover {
+      background: rgb(0 173 238 / 0.28);
+      text-decoration: none;
+
+      svg {
+        transform: translate(2px, -2px);
+      }
+    }
+  }
+
+  &__pulse {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #34d399;
+    box-shadow: 0 0 0 0 rgb(52 211 153 / 0.6);
+    animation: mil-pulse 2.4s ease-out infinite;
+  }
+}
+
+/* ── Sidebar rail: opens on hover, pin to keep open (NavBrandClient) ── */
+
+.mil-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Opening or closing the menu snaps the layout in one step (animating the
+   column width re-wraps every field on each frame), and only the menu's
+   contents glide in. */
+.template-default,
+.template-default--nav-animate {
+  transition: none;
+}
+
+.template-default--nav-open .nav__scroll {
+  animation: mil-nav-in 0.4s var(--mil-ease) both;
+}
+
+@keyframes mil-nav-in {
+  from {
+    opacity: 0;
+    transform: translateX(-14px);
+  }
+}
+
+@media (min-width: 769px) {
+  /* Payload's arrow hides the whole menu; the rail and the pin button
+     replace it, so it only shows to bring back a fully hidden menu. */
+  .template-default--nav-open .template-default__nav-toggler-wrapper {
+    display: none;
+  }
+
+  .nav__scroll {
+    --nav-padding-block-start: 22px;
+    --nav-padding-inline-start: 16px;
+    --nav-padding-inline-end: 16px;
+    overflow-x: hidden;
+  }
+
+  /* The menu slides open over the page; the page itself never moves, so
+     form fields are not re-wrapped while it animates. */
+  .nav {
+    z-index: 5;
+    transition:
+      width 0.45s var(--mil-ease),
+      box-shadow 0.45s var(--mil-ease);
+  }
+
+  .nav__link,
+  .mil-nav-brand,
+  .mil-nav-brand__site {
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  .mil-nav-brand__logo {
+    flex-shrink: 0;
+  }
+
+  /* Text fades back in once there is room for it */
+  .nav__link-label,
+  .nav-group__toggle,
+  .nav-group__indicator,
+  .mil-nav-brand__name,
+  .mil-nav-brand__site-label,
+  .mil-nav-brand__toggle {
+    transition:
+      opacity 0.3s var(--mil-ease) 0.15s,
+      color 0.3s var(--mil-ease) 0.15s,
+      background-color 0.25s var(--mil-ease);
+  }
+
+  .mil-nav-brand {
+    transition:
+      padding 0.45s var(--mil-ease),
+      background-color 0.45s var(--mil-ease),
+      border-color 0.45s var(--mil-ease);
+  }
+
+  .mil-nav-brand__logo img {
+    transition: height 0.45s var(--mil-ease);
+  }
+
+  /* Unpinned (default): an icon rail that opens while hovered */
+  .template-default:has(.mil-nav-brand--mini) {
+    --nav-width: 76px;
+
+    .nav:hover,
+    .nav:focus-within {
+      width: 275px;
+      transition-delay: 0.06s;
+      box-shadow:
+        1px 0 0 rgb(255 255 255 / 0.06) inset,
+        30px 0 70px -24px rgb(11 29 71 / 0.55);
+    }
+
+    .nav:not(:hover, :focus-within) {
+      .nav__scroll {
+        scrollbar-width: none;
+      }
+
+      .nav__link-label,
+      .nav-group__indicator,
+      .mil-nav-brand__name,
+      .mil-nav-brand__site-label,
+      .mil-nav-brand__toggle {
+        opacity: 0;
+        transition-duration: 0.12s;
+        transition-delay: 0s;
+      }
+
+      /* group titles become a hairline */
+      .nav-group__toggle {
+        color: transparent;
+        transition-duration: 0.12s;
+        transition-delay: 0s;
+
+        .nav-group__label {
+          gap: 0;
+
+          &::after {
+            background: rgb(164 205 255 / 0.22);
+          }
+        }
+      }
+
+      .nav__link:hover {
+        transform: none;
+      }
+
+      .mil-nav-brand {
+        padding: 10px 4px;
+        background-color: transparent;
+        border-color: transparent;
+        box-shadow: none;
+      }
+
+      .mil-nav-brand__logo img {
+        height: 22px;
+      }
+    }
+  }
+}
+
+
+/* Group: a clear small-caps title with a hairline, then its pages */
+.nav-group {
+  margin-bottom: 18px;
+}
+
+.nav-group__toggle {
+  align-items: center;
+  margin-bottom: 6px;
+  padding: 4px 2px;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--nav-muted);
+
+  .nav-group__label {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    gap: 10px;
+
+    &::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, rgb(164 205 255 / 0.3), transparent);
+    }
+  }
+
+  .stroke {
+    stroke: var(--nav-muted);
+  }
+
+  &:hover,
+  &:focus-visible {
+    color: #fff;
+
+    .stroke {
+      stroke: #fff;
+    }
+  }
+}
+
+.nav-group__indicator svg .stroke {
+  stroke: var(--nav-muted);
+}
+
+/* Page links: icon + label in an even 38px row */
+.nav__link {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  width: 100%;
+  min-height: 38px;
+  margin: 1px 0;
+  padding: 0 12px;
+  border-radius: 11px;
+  font-size: 14.5px;
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--nav-ink);
+  transition:
+    background-color 0.25s var(--mil-ease),
+    color 0.25s var(--mil-ease),
+    transform 0.25s var(--mil-ease);
+
+  &::before {
+    content: "";
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    background: currentColor;
+    opacity: 0.85;
+    mask: var(--mil-nav-icon, none) center / contain no-repeat;
+    transition: transform 0.3s var(--mil-ease);
+  }
+
+  &:hover {
+    text-decoration: none;
+    color: #fff;
+    background: rgb(255 255 255 / 0.08);
+    transform: translateX(2px);
+
+    &::before {
+      transform: scale(1.1);
+    }
+  }
+}
+
+@each $id, $svg in $mil-nav-icons {
+  #nav-#{$id} {
+    --mil-nav-icon: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'>#{$svg}</svg>");
+  }
+}
+
+/* Current page: a lit glass row with a glowing sky edge */
+.nav__link:has(.nav__link-indicator) {
+  color: #fff;
+  background: linear-gradient(90deg, rgb(0 173 238 / 0.32), rgb(0 173 238 / 0.08));
+  box-shadow:
+    0 1px 0 rgb(255 255 255 / 0.12) inset,
+    0 10px 24px -14px rgb(0 173 238 / 0.8);
+
+  &::before {
+    opacity: 1;
+    background: #7fdcff;
+  }
+}
+
+.nav__link-indicator {
+  inset-inline-start: 0;
+  width: 3px;
+  height: 20px;
+  border-radius: 0 3px 3px 0;
+  background: linear-gradient(180deg, #7fdcff, var(--mil-sky));
+  box-shadow: 0 0 14px rgb(0 173 238 / 0.9);
+}
+
+.nav__link-label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Settings and logout at the bottom */
+.nav__controls {
+  width: 100%;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  padding-top: 14px;
+  border-top: 1px solid rgb(255 255 255 / 0.1);
+
+  a,
+  button {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    color: var(--nav-ink);
+    background: rgb(255 255 255 / 0.06);
+    transition: background-color 0.25s var(--mil-ease);
+
+    &:hover {
+      color: #fff;
+      background: rgb(255 255 255 / 0.14);
+    }
+  }
+
+  svg .stroke,
+  svg .fill {
+    stroke: currentColor;
+  }
+}
+
+/* ── Top bar ───────────────────────────────────────────────────── */
+
+.app-header__bg {
+  background: rgb(255 255 255 / 0.65);
+  backdrop-filter: blur(16px) saturate(1.4);
+}
+
+.doc-controls__wrapper {
+  border-radius: var(--style-radius-l);
+}
+
+/* ── Buttons ───────────────────────────────────────────────────── */
+
+.btn {
+  border-radius: 999px;
+  transition:
+    transform 0.2s var(--mil-ease),
+    box-shadow 0.25s var(--mil-ease),
+    background-color 0.2s,
+    border-color 0.2s;
+
+  &:active:not(.btn--disabled) {
+    transform: scale(0.97);
+  }
+}
+
+.btn--style-primary:not(.btn--disabled) {
+  position: relative;
+  overflow: hidden;
+  --color: #fff;
+  --hover-color: #fff;
+  background-image: var(--mil-gradient);
+  background-size: 160% 100%;
+  background-position: 0% 50%;
+  box-shadow: var(--mil-glow);
+  transition:
+    background-position 0.6s var(--mil-ease),
+    box-shadow 0.25s var(--mil-ease),
+    transform 0.2s var(--mil-ease);
+
+  /* a light sweep across the button on hover */
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(100deg, transparent 30%, rgb(255 255 255 / 0.45) 50%, transparent 70%);
+    transform: translateX(-120%);
+    pointer-events: none;
+  }
+
+  &:hover {
+    background-position: 100% 50%;
+    box-shadow: 0 14px 34px -12px rgb(0 173 238 / 0.65);
+
+    &::after {
+      transition: transform 0.8s var(--mil-ease);
+      transform: translateX(120%);
+    }
+  }
+}
+
+.btn--style-secondary:not(.btn--disabled) {
+  --btn-border: 1px solid rgb(27 60 127 / 0.22);
+  --hover-btn-border: 1px solid var(--mil-sky);
+  --hover-color: var(--mil-blue);
+  background: rgb(255 255 255 / 0.7);
+}
+
+/* ── Fields ────────────────────────────────────────────────────── */
+
+.field-type input,
+.field-type textarea,
+.field-type .rs__control,
+.search-bar {
+  border-radius: var(--style-radius-m);
+  transition:
+    border-color 0.2s,
+    box-shadow 0.25s var(--mil-ease),
+    background-color 0.2s;
+}
+
+.field-type input:focus,
+.field-type textarea:focus,
+.field-type .rs__control--is-focused,
+.search-bar:focus-within {
+  border-color: var(--mil-sky);
+  box-shadow: 0 0 0 4px rgb(0 173 238 / 0.14);
+}
+
+/* Tabs inside forms: an underline that grows in brand colours */
+.tabs-field__tab-button {
+  transition:
+    color 0.2s,
+    opacity 0.2s;
+
+  &::after {
+    background: var(--mil-gradient);
+    border-radius: 2px;
+  }
+}
+
+.tabs-field__tab-button--active {
+  color: var(--mil-blue);
+
+  &::after {
+    height: 3px !important;
+    animation: mil-grow 0.4s var(--mil-ease) both;
+  }
+}
+
+.doc-tab--active {
+  background: rgb(23 101 194 / 0.08);
+  color: var(--mil-blue);
+}
+
+/* ── Cards (dashboard collections) ─────────────────────────────── */
+
+.collections__label {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-base-450);
+}
+
+.card {
+  background: rgb(255 255 255 / 0.8);
+  border: 1px solid rgb(27 60 127 / 0.08);
+  border-radius: var(--style-radius-l);
+  box-shadow: 0 1px 2px rgb(14 31 69 / 0.04);
+  backdrop-filter: blur(10px);
+  animation: mil-rise 0.5s var(--mil-ease) both;
+  transition:
+    transform 0.3s var(--mil-ease),
+    box-shadow 0.3s var(--mil-ease),
+    border-color 0.3s;
+
+  &:hover {
+    transform: translateY(-3px);
+    border-color: rgb(0 173 238 / 0.45);
+    box-shadow: 0 18px 40px -22px rgb(23 101 194 / 0.55);
+  }
+}
+
+@for $n from 1 through 12 {
+  .collections__card-list > li:nth-child(#{$n}) .card {
+    animation-delay: #{$n * 45}ms;
+  }
+}
+
+/* ── Lists ─────────────────────────────────────────────────────── */
+
+.table {
+  border-radius: var(--style-radius-l);
+}
+
+.table tbody tr {
+  transition: background-color 0.2s;
+}
+
+.table tbody tr:nth-child(odd) {
+  background: rgb(255 255 255 / 0.75);
+}
+
+.table tbody tr:hover {
+  background: rgb(0 173 238 / 0.07);
+}
+
+.pill {
+  border-radius: 999px;
+}
+
+/* ── Login and other single-card screens ───────────────────────── */
+
+.template-minimal {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  background: linear-gradient(160deg, #f7f9fd 0%, #eef3fb 100%);
+
+  /* two slow colour fields drifting behind the card */
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    width: 62vmax;
+    height: 62vmax;
+    border-radius: 50%;
+    filter: blur(70px);
+    opacity: 0.55;
+    pointer-events: none;
+  }
+
+  &::before {
+    top: -26vmax;
+    right: -18vmax;
+    background: radial-gradient(circle at 40% 40%, #00adee, rgb(0 173 238 / 0) 65%);
+    animation: mil-drift 18s ease-in-out infinite alternate;
+  }
+
+  &::after {
+    bottom: -30vmax;
+    left: -20vmax;
+    background: radial-gradient(circle at 60% 60%, #1b3c7f, rgb(27 60 127 / 0) 65%),
+      radial-gradient(circle at 20% 20%, rgb(250 175 64 / 0.7), rgb(250 175 64 / 0) 55%);
+    animation: mil-drift 22s ease-in-out infinite alternate-reverse;
+  }
+}
+
+.template-minimal__wrap {
+  padding: 40px 40px 36px;
+  border-radius: 26px;
+  background: rgb(255 255 255 / 0.72);
+  border: 1px solid rgb(255 255 255 / 0.9);
+  box-shadow:
+    0 40px 80px -40px rgb(14 31 69 / 0.45),
+    0 1px 0 rgb(255 255 255 / 0.8) inset;
+  backdrop-filter: blur(22px) saturate(1.5);
+  animation: mil-rise 0.7s var(--mil-ease) both;
+}
+
+.login__brand {
+  margin-bottom: 28px;
+}
+
+/* ── MIL graphics ──────────────────────────────────────────────── */
+
+.mil-admin-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+
+  img {
+    width: auto;
+    height: 46px;
+    filter: drop-shadow(0 8px 18px rgb(0 173 238 / 0.35));
+  }
+
+  span {
+    display: grid;
+    line-height: 1.15;
+  }
+
+  strong {
+    font-size: 21px;
+    letter-spacing: -0.02em;
+    color: var(--mil-blue);
+  }
+
+  small {
+    font-size: 13px;
+    color: var(--color-base-500);
+  }
+}
+
+/* The MIL mark is wider than tall; Payload's breadcrumb home slot is a 16px square. */
+.step-nav .step-nav__home {
+  width: auto;
+  height: 18px;
+}
+
+.mil-admin-icon {
+  display: block;
+  width: auto;
+  max-width: none;
+  height: 18px;
+  object-fit: contain;
+}
+
+/* ── Dashboard: start here ─────────────────────────────────────── */
+
+.mil-dash {
+  display: grid;
+  gap: 18px;
+  margin-bottom: 36px;
+
+  > * {
+    animation: mil-rise 0.6s var(--mil-ease) both;
+    animation-delay: calc(var(--i, 0) * 60ms);
+  }
+
+  &__signals {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 12px;
+    animation: none;
+  }
+
+  &__label {
+    margin: 10px 0 0;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-base-450);
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 14px;
+    animation: none;
+  }
+}
+
+/* Welcome banner */
+.mil-hero {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  min-height: 190px;
+  padding: 34px 36px;
+  border-radius: 24px;
+  color: #fff;
+  background: var(--mil-gradient);
+  box-shadow: 0 30px 60px -34px rgb(23 101 194 / 0.75);
+
+  h1 {
+    margin: 10px 0 0;
+    font-size: clamp(26px, 3vw, 36px);
+    font-weight: 650;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    color: #fff;
+  }
+
+  &__mesh {
+    position: absolute;
+    inset: -40%;
+    z-index: -1;
+    background:
+      radial-gradient(closest-side at 30% 35%, rgb(255 255 255 / 0.28), transparent),
+      radial-gradient(closest-side at 75% 70%, rgb(0 228 220 / 0.35), transparent),
+      radial-gradient(closest-side at 85% 15%, rgb(250 175 64 / 0.3), transparent);
+    animation: mil-mesh 16s ease-in-out infinite alternate;
+  }
+
+  &__mark {
+    position: absolute;
+    right: 4%;
+    bottom: -14%;
+    z-index: -1;
+    width: min(360px, 42%);
+    height: auto;
+  }
+
+  &__shape {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: mil-float 7s ease-in-out infinite;
+
+    &--b {
+      animation-delay: -2.3s;
+    }
+
+    &--c {
+      animation-delay: -4.6s;
+    }
+  }
+
+  &__body {
+    position: relative;
+    max-width: 640px;
+  }
+
+  &__eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    padding: 5px 12px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    background: rgb(255 255 255 / 0.14);
+    border: 1px solid rgb(255 255 255 / 0.25);
+    backdrop-filter: blur(8px);
+  }
+
+  &__dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--mil-yellow);
+    box-shadow: 0 0 0 0 rgb(250 175 64 / 0.7);
+    animation: mil-pulse 2.2s ease-out infinite;
+  }
+
+  &__lead {
+    margin: 10px 0 0;
+    font-size: 15px;
+    line-height: 1.5;
+    color: rgb(255 255 255 / 0.85);
+  }
+
+  &__roles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 16px 0 0;
+
+    span {
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--mil-blue);
+      background: rgb(255 255 255 / 0.92);
+    }
+  }
+}
+
+/* Attention cards */
+.mil-signal {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  border-radius: 18px;
+  border: 1px solid rgb(27 60 127 / 0.08);
+  background: rgb(255 255 255 / 0.82);
+  color: var(--color-base-600);
+  text-decoration: none;
+  backdrop-filter: blur(10px);
+  animation: mil-rise 0.6s var(--mil-ease) both;
+  animation-delay: calc(var(--i, 0) * 60ms);
+  transition:
+    transform 0.3s var(--mil-ease),
+    box-shadow 0.3s var(--mil-ease),
+    border-color 0.3s;
+
+  &__icon {
+    display: grid;
+    flex-shrink: 0;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    color: var(--mil-blue);
+    background: rgb(23 101 194 / 0.08);
+  }
+
+  &__text {
+    display: grid;
+    gap: 2px;
+    font-size: 13px;
+    line-height: 1.3;
+
+    strong {
+      font-size: 26px;
+      line-height: 1;
+      letter-spacing: -0.03em;
+      color: var(--color-base-800);
+    }
+
+    &--empty {
+      font-size: 14px;
+    }
+  }
+
+  &__arrow {
+    margin-left: auto;
+    color: var(--color-base-350);
+    transition:
+      transform 0.3s var(--mil-ease),
+      color 0.3s;
+  }
+
+  /* Something to act on: amber halo, live icon */
+  &[data-active="true"] {
+    border-color: rgb(250 175 64 / 0.5);
+    background: linear-gradient(135deg, rgb(255 248 235 / 0.95), rgb(255 255 255 / 0.9));
+
+    .mil-signal__icon {
+      color: #b86a00;
+      background: rgb(250 175 64 / 0.2);
+      box-shadow: 0 0 0 0 rgb(250 175 64 / 0.45);
+      animation: mil-pulse 2.4s ease-out infinite;
+    }
+  }
+
+  &:hover {
+    transform: translateY(-3px);
+    border-color: rgb(0 173 238 / 0.45);
+    box-shadow: 0 18px 38px -22px rgb(23 101 194 / 0.55);
+
+    .mil-signal__arrow {
+      color: var(--mil-sky);
+      transform: translate(2px, -2px);
+    }
+  }
+}
+
+/* Quick action tiles */
+.mil-tile {
+  position: relative;
+  display: grid;
+  gap: 6px;
+  padding: 20px;
+  border-radius: 20px;
+  border: 1px solid rgb(27 60 127 / 0.08);
+  background: rgb(255 255 255 / 0.82);
+  color: var(--color-base-800);
+  text-decoration: none;
+  backdrop-filter: blur(10px);
+  overflow: hidden;
+  isolation: isolate;
+  animation: mil-rise 0.6s var(--mil-ease) both;
+  animation-delay: calc(var(--i, 0) * 60ms);
+  transition:
+    transform 0.35s var(--mil-ease),
+    box-shadow 0.35s var(--mil-ease),
+    border-color 0.35s;
+
+  /* gradient wash that slides in on hover */
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(135deg, rgb(0 173 238 / 0.1), rgb(27 60 127 / 0.04) 60%, transparent);
+    opacity: 0;
+    transition: opacity 0.35s var(--mil-ease);
+  }
+
+  &__icon {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    margin-bottom: 8px;
+    border-radius: 14px;
+    color: #fff;
+    background: var(--mil-gradient);
+    box-shadow: var(--mil-glow);
+    transition: transform 0.35s var(--mil-ease);
+  }
+
+  strong {
+    font-size: 16px;
+    letter-spacing: -0.01em;
+  }
+
+  &__text {
+    font-size: 13px;
+    line-height: 1.45;
+    color: var(--color-base-500);
+  }
+
+  &__arrow {
+    position: absolute;
+    top: 20px;
+    right: 18px;
+    color: var(--color-base-300);
+    transition:
+      transform 0.35s var(--mil-ease),
+      color 0.35s;
+  }
+
+  &:hover {
+    transform: translateY(-4px);
+    border-color: rgb(0 173 238 / 0.45);
+    box-shadow: 0 24px 46px -26px rgb(23 101 194 / 0.6);
+
+    &::before {
+      opacity: 1;
+    }
+
+    .mil-tile__icon {
+      transform: rotate(-6deg) scale(1.06);
+    }
+
+    .mil-tile__arrow {
+      color: var(--mil-sky);
+      transform: translate(3px, -3px);
+    }
+  }
+}
+
+.mil-signal:focus-visible,
+.mil-tile:focus-visible {
+  outline: 2px solid var(--mil-sky);
+  outline-offset: 3px;
+}
+
+/* Help */
+.mil-help {
+  padding: 16px 20px;
+  border-radius: 18px;
+  border: 1px solid rgb(27 60 127 / 0.08);
+  background: rgb(255 255 255 / 0.7);
+  backdrop-filter: blur(10px);
+
+  summary {
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--mil-blue);
+  }
+
+  ul {
+    display: grid;
+    gap: 8px;
+    margin: 12px 0 0;
+    padding-left: 18px;
+    font-size: 14px;
+    color: var(--color-base-650);
+  }
+
+  &[open] ul {
+    animation: mil-rise 0.4s var(--mil-ease) both;
+  }
+}
+
+/* ── Motion ────────────────────────────────────────────────────── */
+
+@keyframes mil-rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes mil-grow {
+  from {
+    transform: scaleX(0.2);
+    opacity: 0;
+  }
+  to {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+}
+
+@keyframes mil-drift {
+  from {
+    transform: translate(0, 0) scale(1);
+  }
+  to {
+    transform: translate(-6vmax, 5vmax) scale(1.12);
+  }
+}
+
+@keyframes mil-mesh {
+  from {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  to {
+    transform: translate(6%, -4%) rotate(8deg);
+  }
+}
+
+@keyframes mil-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes mil-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgb(250 175 64 / 0.55);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgb(250 175 64 / 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgb(250 175 64 / 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .template-default__wrap > *,
+  .card,
+  .template-minimal__wrap,
+  .template-minimal::before,
+  .template-minimal::after,
+  .mil-dash > *,
+  .mil-signal,
+  .mil-tile,
+  .mil-hero__mesh,
+  .mil-hero__shape,
+  .mil-hero__dot,
+  .mil-signal[data-active="true"] .mil-signal__icon,
+  .tabs-field__tab-button--active::after,
+  .nav__scroll,
+  .mil-nav-brand,
+  .mil-nav-brand__pulse {
+    animation: none !important;
+  }
+
+  .btn--style-primary::after {
+    display: none;
+  }
+}
+
+/* ── Live preview: one desktop screen fitted to the pane ───────────
+   PreviewFit.tsx sets --mil-fit (scale) and the offsets in Responsive
+   mode; the site renders at 1440 × 900 and is scaled down to fit whole. */
+
+.live-preview-window__main.mil-fit {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(600px 400px at 80% 0%, rgb(0 173 238 / 0.1), transparent 60%),
+    var(--color-base-100);
+
+  .iframe-loader__container {
+    position: absolute;
+    top: var(--mil-fit-y);
+    left: var(--mil-fit-x);
+    width: 1440px;
+    height: 900px;
+    transform: scale(var(--mil-fit));
+    transform-origin: 0 0;
+    border-radius: calc(14px / var(--mil-fit));
+    overflow: hidden;
+    box-shadow: 0 calc(30px / var(--mil-fit)) calc(60px / var(--mil-fit)) calc(-30px / var(--mil-fit)) rgb(14 31 69 / 0.45);
+  }
+
+  #live-preview-iframe {
+    width: 100% !important;
+    height: 100% !important;
+    transform: none !important;
+  }
+}
+
+/* ── Homepage form: links to other menus, and the jump from the preview ── */
+
+.mil-manage {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 8px 0 24px;
+  padding: 16px 20px;
+  border-radius: var(--style-radius-l);
+  border: 1px dashed rgb(23 101 194 / 0.35);
+  background: rgb(0 173 238 / 0.05);
+  color: var(--mil-blue);
+  text-decoration: none;
+  transition:
+    background-color 0.25s var(--mil-ease),
+    border-color 0.25s var(--mil-ease),
+    transform 0.25s var(--mil-ease);
+
+  span {
+    display: grid;
+    gap: 2px;
+  }
+
+  strong {
+    font-size: 15px;
+  }
+
+  small {
+    font-size: 13px;
+    color: var(--color-base-500);
+  }
+
+  svg {
+    flex-shrink: 0;
+    transition: transform 0.25s var(--mil-ease);
+  }
+
+  &:hover {
+    text-decoration: none;
+    border-style: solid;
+    border-color: var(--mil-sky);
+    background: rgb(0 173 238 / 0.1);
+
+    svg {
+      transform: translate(2px, -2px);
+    }
+  }
+}
+
+/* The tab a preview "Edit" button opened glows once */
+.tabs-field__content-wrap.mil-flash {
+  animation: mil-flash 1.4s var(--mil-ease);
+  border-radius: var(--style-radius-l);
+}
+
+@keyframes mil-flash {
+  0%,
+  35% {
+    box-shadow: 0 0 0 3px rgb(0 173 238 / 0.45), 0 0 40px rgb(0 173 238 / 0.25);
+    background-color: rgb(0 173 238 / 0.05);
+  }
+  100% {
+    box-shadow: 0 0 0 3px rgb(0 173 238 / 0);
+    background-color: transparent;
+  }
+}

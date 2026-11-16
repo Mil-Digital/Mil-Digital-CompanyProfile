@@ -16,6 +16,7 @@ export function PageHero({
   actions,
   children,
   className,
+  cms,
 }: {
   label: string;
   title: string;
@@ -25,12 +26,15 @@ export function PageHero({
   actions?: React.ReactNode;
   children?: React.ReactNode;
   className?: string;
+  /** Section key for the CMS preview's "Edit" button. */
+  cms?: string;
 }) {
   return (
     <section
       data-ground="#0e1f45"
       className={cn("grain relative overflow-hidden", image ? "flex min-h-[86svh] items-end pt-[var(--header-space)]" : "pt-40 md:pt-48", className)}
       aria-label={label}
+      data-cms={cms}
     >
       {image ? (
         <>

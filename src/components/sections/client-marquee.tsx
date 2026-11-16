@@ -2,6 +2,7 @@ import Image from "next/image";
 import type { Client } from "@/content/home";
 import { Hairline } from "@/components/motion/hairline";
 import { Reveal } from "@/components/motion/reveal";
+import { HOME_COPY } from "@/content/home-copy";
 
 function Row({ items, reverse, duration }: { items: Client[]; reverse?: boolean; duration: string }) {
   return (
@@ -28,12 +29,12 @@ function Row({ items, reverse, duration }: { items: Client[]; reverse?: boolean;
  * Chapter 3 (inventory: portfolio). 150+ brands as two rows drifting in
  * opposite directions; they slide in from opposite sides on arrival.
  */
-export function ClientMarquee({ clients }: { clients: Client[] }) {
+export function ClientMarquee({ clients, title = HOME_COPY.clients.title }: { clients: Client[]; title?: string }) {
   const half = Math.ceil(clients.length / 2);
   return (
-    <section data-ground="#0e1f45" className="py-[clamp(64px,8vw,120px)]" aria-label="Clients">
+    <section data-cms="clients" data-ground="#0e1f45" className="py-[clamp(64px,8vw,120px)]" aria-label="Clients">
       <div className="container-x mb-10 grid gap-6 md:grid-cols-12 md:items-end">
-        <h2 className="t-h2 md:col-span-6">Trusted by 150+ brands</h2>
+        <h2 className="t-h2 md:col-span-6">{title}</h2>
         <Reveal className="md:col-span-5 md:col-start-8">
           <p className="t-body text-fg-2">
             From neighbourhood F&amp;B to national retail, beauty, property and B2B. A few of the brands that trusted MIL with

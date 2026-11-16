@@ -1,21 +1,32 @@
 import type { CollectionConfig } from "payload";
-import { admins, adminsField, loggedIn, ROLES } from "@/payload/access";
+import { admins, adminsField, hasRole, ROLES } from "@/payload/access";
+
+const ROLE_HELP: Record<(typeof ROLES)[number], string> = {
+  admin: "Admin",
+  editor: "Editor",
+  hr: "HR",
+  sales: "Sales",
+};
 
 export const Users: CollectionConfig = {
   slug: "users",
+  labels: { singular: "User", plural: "Users" },
   admin: {
     useAsTitle: "email",
-    defaultColumns: ["name", "email", "roles"],
-    group: "Settings",
+    defaultColumns: ["name", "email", "roles", "updatedAt"],
+    listSearchableFields: ["name", "email"],
+    group: "Administration",
+    description: "Team accounts. Only admins can add people or change roles.",
+    // Everyone can still edit their own account from the avatar menu.
+    hidden: ({ user }) => !hasRole(user, "admin"),
   },
   auth: true,
   access: {
-    read: loggedIn,
+    // Admins see everyone; other roles only their own account.
+    read: ({ req }) => (hasRole(req.user, "admin") ? true : req.user ? { id: { equals: req.user.id } } : false),
     create: admins,
     delete: admins,
-    // Admins edit anyone; everyone else only themselves.
-    update: ({ req }) =>
-      (req.user as { roles?: string[] } | null)?.roles?.includes("admin") ? true : { id: { equals: req.user?.id } },
+    update: ({ req }) => (hasRole(req.user, "admin") ? true : req.user ? { id: { equals: req.user.id } } : false),
   },
   hooks: {
     beforeChange: [
@@ -30,17 +41,19 @@ export const Users: CollectionConfig = {
     ],
   },
   fields: [
-    { name: "name", type: "text" },
+    { name: "name", type: "text", label: "Full name" },
     {
       name: "roles",
       type: "select",
+      label: "Role",
       hasMany: true,
       defaultValue: ["editor"],
-      options: ROLES.map((r) => ({ label: r[0].toUpperCase() + r.slice(1), value: r })),
+      options: ROLES.map((r) => ({ label: ROLE_HELP[r], value: r })),
       saveToJWT: true,
       access: { update: adminsField, create: adminsField },
       admin: {
-        description: "Admin: everything. Editor: site content. HR: careers. Sales: leads.",
+        description:
+          "Admin: everything, including users. Editor: website content and media. HR: jobs and applications. Sales: leads.",
       },
     },
   ],

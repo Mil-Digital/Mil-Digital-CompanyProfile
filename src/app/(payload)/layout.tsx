@@ -4,6 +4,7 @@ import config from '@payload-config'
 import '@payloadcms/next/css'
 import type { ServerFunctionClient } from 'payload'
 import { handleServerFunctions, RootLayout } from '@payloadcms/next/layouts'
+import { connection } from 'next/server'
 import React from 'react'
 
 import { importMap } from './admin/importMap.js'
@@ -22,10 +23,19 @@ const serverFunction: ServerFunctionClient = async function (args) {
   })
 }
 
-const Layout = ({ children }: Args) => (
-  <RootLayout config={config} importMap={importMap} serverFunction={serverFunction}>
-    {children}
-  </RootLayout>
-)
+// MIL edit (cacheComponents): the admin is per-user and always rendered at
+// request time. `instant = false` lets its navigations wait on the server
+// instead of failing instant-navigation validation, and connection() moves
+// Payload's request-time values (e.g. new Date()) out of the prerender.
+export const instant = false
+
+const Layout = async ({ children }: Args) => {
+  await connection()
+  return (
+    <RootLayout config={config} importMap={importMap} serverFunction={serverFunction}>
+      {children}
+    </RootLayout>
+  )
+}
 
 export default Layout

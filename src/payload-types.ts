@@ -73,8 +73,8 @@ export interface Config {
     articles: Article;
     reports: Report;
     jobs: Job;
-    leads: Lead;
     'job-applications': JobApplication;
+    leads: Lead;
     media: Media;
     users: User;
     'payload-kv': PayloadKv;
@@ -90,8 +90,8 @@ export interface Config {
     articles: ArticlesSelect<false> | ArticlesSelect<true>;
     reports: ReportsSelect<false> | ReportsSelect<true>;
     jobs: JobsSelect<false> | JobsSelect<true>;
-    leads: LeadsSelect<false> | LeadsSelect<true>;
     'job-applications': JobApplicationsSelect<false> | JobApplicationsSelect<true>;
+    leads: LeadsSelect<false> | LeadsSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
@@ -138,34 +138,43 @@ export interface UserAuthOperations {
   };
 }
 /**
+ * Published case studies appear on Our Works and the matching service pages. To show one on the homepage, add it in Website → Homepage → Featured.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "case-studies".
  */
 export interface CaseStudy {
   id: number;
+  /**
+   * The brand name, e.g. Kopi Senja.
+   */
   client: string;
   /**
-   * One line on what MIL did.
+   * One line on what MIL achieved.
    */
   title: string;
   /**
-   * Part of the URL. Leave empty to generate from client.
+   * e.g. F&B, Beauty, Retail. Use the same spelling as other case studies so filters group them.
    */
-  slug?: string | null;
   industry: string;
   scale?: ('sme' | 'mid-market' | 'enterprise') | null;
+  /**
+   * Decides which service pages show this case study.
+   */
   services: ('Consulting' | 'Advertising' | 'Creative')[];
   /**
-   * The headline result, e.g. 4.8x / ROAS in 90 days.
+   * The one number on the card, e.g. 4.8x · ROAS in 90 days.
    */
   metric: {
     value: string;
     label: string;
   };
-  cover: number | Media;
+  /**
+   * One or two sentences, shown under the headline.
+   */
   summary?: string | null;
   /**
-   * Challenge, approach, results.
+   * Challenge, approach and results. Start each part with a heading.
    */
   body?: {
     root: {
@@ -182,19 +191,33 @@ export interface CaseStudy {
     };
     [k: string]: unknown;
   } | null;
-  featured?: boolean | null;
+  /**
+   * Landscape, at least 1600 × 1000 px. Shown on cards and as the page header.
+   */
+  cover: number | Media;
+  /**
+   * The last part of the page address. Leave empty to create it from the client name. Changing it breaks links that were already shared.
+   */
+  slug?: string | null;
+  /**
+   * Shown on the page and used for sorting. Filled in automatically when you first publish.
+   */
   publishedAt?: string | null;
+  featured?: boolean | null;
   updatedAt: string;
   createdAt: string;
+  _status?: ('draft' | 'published') | null;
 }
 /**
+ * Photos, logos, videos and report PDFs. Everything here is public on the website, so don't upload private documents. Replacing a file updates it everywhere it is used.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "media".
  */
 export interface Media {
   id: number;
   /**
-   * Describe the image for screen readers and search engines.
+   * What the file shows, e.g. “MIL team in a strategy session”. Read aloud by screen readers, used by search engines, and makes the file easy to find here.
    */
   alt: string;
   prefix?: string | null;
@@ -212,7 +235,7 @@ export interface Media {
   focalY?: number | null;
 }
 /**
- * Logos should be white on a transparent background (PNG or SVG); the marquee sits on brand blue.
+ * Logos in “Trusted by 150+ brands”. Upload white logos on a transparent background (PNG or SVG); they sit on MIL blue.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "clients".
@@ -220,30 +243,44 @@ export interface Media {
 export interface Client {
   id: number;
   name: string;
+  /**
+   * White on transparent, PNG or SVG, at least 400 px wide.
+   */
   logo: number | Media;
   showInMarquee?: boolean | null;
   /**
-   * Lower comes first.
+   * Lower numbers come first.
    */
   order?: number | null;
   updatedAt: string;
   createdAt: string;
 }
 /**
+ * Quotes in “What our Milers say” on the homepage. Untick “Show on website” to hide one without deleting it.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "testimonials".
  */
 export interface Testimonial {
   id: number;
+  /**
+   * In the client's own words. Two to four sentences read best.
+   */
   quote: string;
   name: string;
   role?: string | null;
   company: string;
+  showOnWebsite?: boolean | null;
+  /**
+   * Lower numbers come first.
+   */
   order?: number | null;
   updatedAt: string;
   createdAt: string;
 }
 /**
+ * Write and save as a draft as often as you like. Readers only see an article after you press Publish.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "articles".
  */
@@ -251,20 +288,8 @@ export interface Article {
   id: number;
   title: string;
   /**
-   * Part of the URL. Leave empty to generate from title.
+   * Use headings to break up long sections.
    */
-  slug?: string | null;
-  category: 'Advertising' | 'Playbook' | 'Creative' | 'Research' | 'Consulting';
-  /**
-   * e.g. 6 min read
-   */
-  readingTime?: string | null;
-  excerpt: string;
-  cover: number | Media;
-  author?: {
-    name?: string | null;
-    role?: string | null;
-  };
   content?: {
     root: {
       type: string;
@@ -280,12 +305,35 @@ export interface Article {
     };
     [k: string]: unknown;
   } | null;
+  /**
+   * One or two sentences that make people want to read on (around 200 characters).
+   */
+  excerpt: string;
+  /**
+   * Landscape, at least 1600 × 900 px.
+   */
+  cover: number | Media;
+  category: 'Advertising' | 'Playbook' | 'Creative' | 'Research' | 'Consulting';
+  readingTime?: string | null;
+  author?: {
+    name?: string | null;
+    role?: string | null;
+  };
+  /**
+   * The last part of the page address. Leave empty to create it from the title. Changing it breaks links that were already shared.
+   */
+  slug?: string | null;
+  /**
+   * Shown on the page and used for sorting. Filled in automatically when you first publish.
+   */
   publishedAt?: string | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
 }
 /**
+ * Industry reports on /reports. Gated reports ask for a name and email (saved in Leads) before the download.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "reports".
  */
@@ -293,18 +341,14 @@ export interface Report {
   id: number;
   title: string;
   /**
-   * Part of the URL. Leave empty to generate from title.
+   * What the report covers, in two or three sentences.
    */
-  slug?: string | null;
-  /**
-   * e.g. F&B, Beauty, Retail
-   */
-  industry?: string | null;
   summary: string;
-  cover: number | Media;
+  industry?: string | null;
   /**
-   * Key numbers shown on the teaser, e.g. 63% / of orders start on social.
+   * Landscape, at least 1600 × 1000 px.
    */
+  cover: number | Media;
   findings?:
     | {
         stat: string;
@@ -313,34 +357,37 @@ export interface Report {
       }[]
     | null;
   /**
-   * The full report (PDF).
+   * Leave empty until the PDF is ready; the page then shows the teaser only.
    */
   file?: (number | null) | Media;
   /**
-   * Ask for name and email before download.
+   * The last part of the page address. Leave empty to create it from the title. Changing it breaks links that were already shared.
    */
+  slug?: string | null;
   gated?: boolean | null;
+  /**
+   * Shown on the page and used for sorting. Filled in automatically when you first publish.
+   */
   publishedAt?: string | null;
   updatedAt: string;
   createdAt: string;
+  _status?: ('draft' | 'published') | null;
 }
 /**
+ * Roles on the Career page. Set a role to Closed to take it off the site without losing it.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "jobs".
  */
 export interface Job {
   id: number;
   title: string;
-  /**
-   * Part of the URL. Leave empty to generate from title.
-   */
-  slug?: string | null;
   department: string;
   location?: string | null;
   employmentType?: ('full-time' | 'contract' | 'internship') | null;
   workMode?: ('onsite' | 'hybrid' | 'remote') | null;
   /**
-   * One or two lines shown in the list.
+   * One or two lines shown in the list of roles.
    */
   summary: string;
   responsibilities?:
@@ -355,21 +402,57 @@ export interface Job {
         id?: string | null;
       }[]
     | null;
+  /**
+   * Only open roles appear on the website.
+   */
   status?: ('open' | 'closed') | null;
+  /**
+   * The last part of the page address. Leave empty to create it from the job title. Changing it breaks links that were already shared.
+   */
+  slug?: string | null;
+  /**
+   * Lower numbers come first.
+   */
   order?: number | null;
   updatedAt: string;
   createdAt: string;
 }
 /**
- * Free consultation requests. Update the status as you follow up.
+ * Sent from the Career page. The candidate's details are locked; use the status and notes to track the process.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "job-applications".
+ */
+export interface JobApplication {
+  id: number;
+  /**
+   * Empty when they applied without picking a role.
+   */
+  job?: (number | null) | Job;
+  name: string;
+  email: string;
+  phone?: string | null;
+  portfolio: string;
+  message?: string | null;
+  /**
+   * New → Reviewing → Interview → Offer, or Rejected.
+   */
+  status?: ('new' | 'reviewing' | 'interview' | 'offer' | 'rejected') | null;
+  /**
+   * Only HR and admins see this.
+   */
+  notes?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Everyone who sent a brief, took the quiz, downloaded a report or joined the ATLAS waitlist. Move the status along as you follow up, and keep notes in the sidebar.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "leads".
  */
 export interface Lead {
   id: number;
-  status?: ('new' | 'contacted' | 'qualified' | 'won' | 'lost') | null;
-  source?: ('contact-form' | 'quiz' | 'booking' | 'report' | 'atlas-waitlist') | null;
   name: string;
   email: string;
   phone?: string | null;
@@ -381,39 +464,29 @@ export interface Lead {
   activities?: ('Advertising' | 'Social Media' | 'Branding' | 'Influencer' | 'Others')[] | null;
   message?: string | null;
   /**
-   * Filled when the visitor took the brand quiz before sending a brief.
+   * Filled in when the visitor took the brand quiz first.
    */
   quizAnswers?: string | null;
   /**
-   * Report or page the lead came from.
+   * New → Contacted → Qualified → Won or Lost.
+   */
+  status?: ('new' | 'contacted' | 'qualified' | 'won' | 'lost') | null;
+  /**
+   * Only the sales team sees this.
+   */
+  notes?: string | null;
+  source?: ('contact-form' | 'quiz' | 'booking' | 'report' | 'atlas-waitlist') | null;
+  /**
+   * e.g. the report they downloaded.
    */
   reference?: string | null;
   pageOrigin?: string | null;
-  /**
-   * Internal follow-up notes.
-   */
-  notes?: string | null;
   updatedAt: string;
   createdAt: string;
 }
 /**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "job-applications".
- */
-export interface JobApplication {
-  id: number;
-  status?: ('new' | 'reviewing' | 'interview' | 'offer' | 'rejected') | null;
-  job?: (number | null) | Job;
-  name: string;
-  email: string;
-  phone?: string | null;
-  portfolio: string;
-  message?: string | null;
-  notes?: string | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
+ * Team accounts. Only admins can add people or change roles.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".
  */
@@ -421,7 +494,7 @@ export interface User {
   id: number;
   name?: string | null;
   /**
-   * Admin: everything. Editor: site content. HR: careers. Sales: leads.
+   * Admin: everything, including users. Editor: website content and media. HR: jobs and applications. Sales: leads.
    */
   roles?: ('admin' | 'editor' | 'hr' | 'sales')[] | null;
   updatedAt: string;
@@ -493,12 +566,12 @@ export interface PayloadLockedDocument {
         value: number | Job;
       } | null)
     | ({
-        relationTo: 'leads';
-        value: number | Lead;
-      } | null)
-    | ({
         relationTo: 'job-applications';
         value: number | JobApplication;
+      } | null)
+    | ({
+        relationTo: 'leads';
+        value: number | Lead;
       } | null)
     | ({
         relationTo: 'media';
@@ -557,7 +630,6 @@ export interface PayloadMigration {
 export interface CaseStudiesSelect<T extends boolean = true> {
   client?: T;
   title?: T;
-  slug?: T;
   industry?: T;
   scale?: T;
   services?: T;
@@ -567,13 +639,15 @@ export interface CaseStudiesSelect<T extends boolean = true> {
         value?: T;
         label?: T;
       };
-  cover?: T;
   summary?: T;
   body?: T;
-  featured?: T;
+  cover?: T;
+  slug?: T;
   publishedAt?: T;
+  featured?: T;
   updatedAt?: T;
   createdAt?: T;
+  _status?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -596,6 +670,7 @@ export interface TestimonialsSelect<T extends boolean = true> {
   name?: T;
   role?: T;
   company?: T;
+  showOnWebsite?: T;
   order?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -606,18 +681,18 @@ export interface TestimonialsSelect<T extends boolean = true> {
  */
 export interface ArticlesSelect<T extends boolean = true> {
   title?: T;
-  slug?: T;
-  category?: T;
-  readingTime?: T;
+  content?: T;
   excerpt?: T;
   cover?: T;
+  category?: T;
+  readingTime?: T;
   author?:
     | T
     | {
         name?: T;
         role?: T;
       };
-  content?: T;
+  slug?: T;
   publishedAt?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -629,9 +704,8 @@ export interface ArticlesSelect<T extends boolean = true> {
  */
 export interface ReportsSelect<T extends boolean = true> {
   title?: T;
-  slug?: T;
-  industry?: T;
   summary?: T;
+  industry?: T;
   cover?: T;
   findings?:
     | T
@@ -641,10 +715,12 @@ export interface ReportsSelect<T extends boolean = true> {
         id?: T;
       };
   file?: T;
+  slug?: T;
   gated?: T;
   publishedAt?: T;
   updatedAt?: T;
   createdAt?: T;
+  _status?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -652,7 +728,6 @@ export interface ReportsSelect<T extends boolean = true> {
  */
 export interface JobsSelect<T extends boolean = true> {
   title?: T;
-  slug?: T;
   department?: T;
   location?: T;
   employmentType?: T;
@@ -671,7 +746,24 @@ export interface JobsSelect<T extends boolean = true> {
         id?: T;
       };
   status?: T;
+  slug?: T;
   order?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "job-applications_select".
+ */
+export interface JobApplicationsSelect<T extends boolean = true> {
+  job?: T;
+  name?: T;
+  email?: T;
+  phone?: T;
+  portfolio?: T;
+  message?: T;
+  status?: T;
+  notes?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -680,8 +772,6 @@ export interface JobsSelect<T extends boolean = true> {
  * via the `definition` "leads_select".
  */
 export interface LeadsSelect<T extends boolean = true> {
-  status?: T;
-  source?: T;
   name?: T;
   email?: T;
   phone?: T;
@@ -693,25 +783,11 @@ export interface LeadsSelect<T extends boolean = true> {
   activities?: T;
   message?: T;
   quizAnswers?: T;
+  status?: T;
+  notes?: T;
+  source?: T;
   reference?: T;
   pageOrigin?: T;
-  notes?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "job-applications_select".
- */
-export interface JobApplicationsSelect<T extends boolean = true> {
-  status?: T;
-  job?: T;
-  name?: T;
-  email?: T;
-  phone?: T;
-  portfolio?: T;
-  message?: T;
-  notes?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -801,6 +877,8 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   createdAt?: T;
 }
 /**
+ * Tabs follow the page from top to bottom. Click “Edit” on any section in the preview to jump to its tab. Changes go live as soon as you press Save.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "home".
  */
@@ -809,30 +887,30 @@ export interface Home {
   hero: {
     eyebrow: string;
     /**
-     * The last word is set huge behind the people in the photo; the rest sits above it.
+     * The last word is set huge behind the people (e.g. “growth.”); the rest sits above it. Keep it to one sentence.
      */
     title: string;
+    /**
+     * Two sentences under the buttons.
+     */
     body: string;
     /**
      * Used together with the cut-out below. While the cut-out is empty, the homepage shows the built-in MIL studio illustration instead.
      */
     backgroundImage?: (number | null) | Media;
     /**
-     * Optional: the same photo with its background removed (transparent PNG/WebP, same size). The last word of the title is set huge between the two, so the people stand in front of it.
+     * Optional. The background image again, same size, with everything except the people removed (transparent PNG or WebP; a JPEG would hide the big word). Leave both images empty to use the built-in MIL studio illustration.
      */
     foregroundImage?: (number | null) | Media;
   };
   showreel: {
-    title: string;
-    caption?: string | null;
     /**
-     * MP4, muted loop. Leave empty to show the poster with a 'coming soon' badge.
+     * MP4, muted, a few seconds that loop, under 20 MB. Leave empty to keep the image.
      */
     video?: (number | null) | Media;
+    title: string;
+    caption?: string | null;
     poster: number | Media;
-    /**
-     * Shown one by one as visitors scroll through the film.
-     */
     milestones?:
       | {
           year: string;
@@ -841,17 +919,73 @@ export interface Home {
         }[]
       | null;
   };
+  about?: {
+    label?: string | null;
+    /**
+     * Two or three sentences. Keep it short; it is set very large.
+     */
+    statement?: string | null;
+    /**
+     * Opens the About MIL Digital page.
+     */
+    linkLabel?: string | null;
+    /**
+     * The three shapes of the MIL mark, under the logo.
+     */
+    pillars?:
+      | {
+          title: string;
+          body: string;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  /**
+   * The moving logo strip.
+   */
+  clientStrip?: {
+    title?: string | null;
+  };
+  /**
+   * The case study carousel.
+   */
+  work?: {
+    label?: string | null;
+    title?: string | null;
+  };
+  /**
+   * The carousel and the case card in the hero, in this order. Drag to reorder. Only published ones show; leave empty to show the latest.
+   */
+  featuredCaseStudies?: (number | CaseStudy)[] | null;
+  services?: {
+    title?: string | null;
+    intro?: string | null;
+  };
+  why?: {
+    label?: string | null;
+    title?: string | null;
+    intro?: string | null;
+    /**
+     * Next to the Meta badges.
+     */
+    certCaption?: string | null;
+    /**
+     * Each one lights up as visitors scroll past it. Drag to reorder.
+     */
+    values?:
+      | {
+          mark: string;
+          title: string;
+          body: string;
+          id?: string | null;
+        }[]
+      | null;
+  };
   stats?:
     | {
-        /**
-         * e.g. Rp
-         */
         prefix?: string | null;
         value: number;
         decimals?: number | null;
-        /**
-         * e.g. +, x, %
-         */
         suffix?: string | null;
         label: string;
         note?: string | null;
@@ -859,17 +993,36 @@ export interface Home {
       }[]
     | null;
   /**
-   * The work wheel, in this order.
-   */
-  featuredCaseStudies?: (number | CaseStudy)[] | null;
-  /**
-   * The curved 'Creative in motion' reel.
+   * Photos that turn behind the figures (team photos and case covers are added automatically). Also used on the Creative Solution page.
    */
   gallery?: (number | Media)[] | null;
+  team?: {
+    label?: string | null;
+    title?: string | null;
+    intro?: string | null;
+  };
   /**
-   * Shown first in Insights & reports. Latest articles are added automatically.
+   * Client quotes.
+   */
+  testimonialsSection?: {
+    label?: string | null;
+  };
+  /**
+   * “Insights & reports”: the featured report plus the latest articles.
+   */
+  insightsSection?: {
+    label?: string | null;
+    title?: string | null;
+  };
+  /**
+   * Shown first. The latest published articles are added automatically.
    */
   featuredReport?: (number | null) | Report;
+  contact?: {
+    label?: string | null;
+    title?: string | null;
+    intro?: string | null;
+  };
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -890,15 +1043,63 @@ export interface HomeSelect<T extends boolean = true> {
   showreel?:
     | T
     | {
+        video?: T;
         title?: T;
         caption?: T;
-        video?: T;
         poster?: T;
         milestones?:
           | T
           | {
               year?: T;
               label?: T;
+              id?: T;
+            };
+      };
+  about?:
+    | T
+    | {
+        label?: T;
+        statement?: T;
+        linkLabel?: T;
+        pillars?:
+          | T
+          | {
+              title?: T;
+              body?: T;
+              id?: T;
+            };
+      };
+  clientStrip?:
+    | T
+    | {
+        title?: T;
+      };
+  work?:
+    | T
+    | {
+        label?: T;
+        title?: T;
+      };
+  featuredCaseStudies?: T;
+  services?:
+    | T
+    | {
+        title?: T;
+        intro?: T;
+      };
+  why?:
+    | T
+    | {
+        label?: T;
+        title?: T;
+        intro?: T;
+        certCaption?: T;
+        values?:
+          | T
+          | {
+              mark?: T;
+              title?: T;
+              body?: T;
               id?: T;
             };
       };
@@ -913,9 +1114,33 @@ export interface HomeSelect<T extends boolean = true> {
         note?: T;
         id?: T;
       };
-  featuredCaseStudies?: T;
   gallery?: T;
+  team?:
+    | T
+    | {
+        label?: T;
+        title?: T;
+        intro?: T;
+      };
+  testimonialsSection?:
+    | T
+    | {
+        label?: T;
+      };
+  insightsSection?:
+    | T
+    | {
+        label?: T;
+        title?: T;
+      };
   featuredReport?: T;
+  contact?:
+    | T
+    | {
+        label?: T;
+        title?: T;
+        intro?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

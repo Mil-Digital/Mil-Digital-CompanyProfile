@@ -104,7 +104,12 @@ export async function requestReport(_prev: SimpleState, form: FormData): Promise
   const slug = get("report");
   try {
     const payload = await getPayload({ config });
-    const found = await payload.find({ collection: "reports", where: { slug: { equals: slug } }, limit: 1, depth: 1 });
+    const found = await payload.find({
+      collection: "reports",
+      where: { slug: { equals: slug }, _status: { equals: "published" } },
+      limit: 1,
+      depth: 1,
+    });
     const report = found.docs[0];
     if (!report) return { status: "error", message: "We couldn't find that report." };
     await payload.create({

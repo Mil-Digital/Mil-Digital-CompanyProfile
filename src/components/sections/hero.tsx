@@ -84,7 +84,7 @@ export function Hero({
   const showCutout = Boolean(hero.foreground) && !videoReady;
 
   return (
-    <section ref={ref} data-ground="#0e1f45" className="grain relative h-[calc(100svh-var(--frame)*2)] min-h-[660px] overflow-hidden" aria-label="Introduction">
+    <section ref={ref} data-ground="#0e1f45" className="grain relative h-[calc(100svh-var(--frame)*2)] min-h-[660px] overflow-hidden" aria-label="Introduction" data-cms="hero">
       <h1 className="sr-only">{flat}</h1>
 
       {/* 1. The scene (or the film, once it plays) */}

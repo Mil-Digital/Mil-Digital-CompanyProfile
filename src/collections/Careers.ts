@@ -1,26 +1,30 @@
-import type { Access, CollectionConfig } from "payload";
-import { admins, anyone } from "@/payload/access";
+import type { CollectionConfig } from "payload";
+import { admins, anyone, hrTeam, hiddenUnless } from "@/payload/access";
 import { revalidateCollection } from "@/payload/revalidate";
-import { slugField } from "@/payload/fields";
-
-const hrTeam: Access = ({ req }) =>
-  Boolean((req.user as { roles?: string[] } | null)?.roles?.some((r) => r === "admin" || r === "hr"));
+import { slugField, statusCell } from "@/payload/fields";
 
 /** Open roles on /career. */
 export const Jobs: CollectionConfig = {
   slug: "jobs",
-  admin: { useAsTitle: "title", defaultColumns: ["title", "department", "status", "order"], group: "Careers" },
+  labels: { singular: "Job", plural: "Jobs" },
+  admin: {
+    useAsTitle: "title",
+    defaultColumns: ["title", "department", "location", "status", "updatedAt"],
+    listSearchableFields: ["title", "department", "location"],
+    group: "Careers",
+    hidden: hiddenUnless("admin", "hr"),
+    description: "Roles on the Career page. Set a role to Closed to take it off the site without losing it.",
+  },
   defaultSort: "order",
   access: { read: anyone, create: hrTeam, update: hrTeam, delete: hrTeam },
   hooks: revalidateCollection("jobs"),
   fields: [
-    { name: "title", type: "text", required: true },
-    slugField("title"),
+    { name: "title", type: "text", label: "Job title", required: true, admin: { placeholder: "Performance Marketing Specialist" } },
     {
       type: "row",
       fields: [
-        { name: "department", type: "text", required: true },
-        { name: "location", type: "text", defaultValue: "Bandung" },
+        { name: "department", type: "text", label: "Team", required: true, admin: { placeholder: "Advertising" } },
+        { name: "location", type: "text", label: "Location", defaultValue: "Bandung" },
       ],
     },
     {
@@ -29,6 +33,7 @@ export const Jobs: CollectionConfig = {
         {
           name: "employmentType",
           type: "select",
+          label: "Employment type",
           defaultValue: "full-time",
           options: [
             { label: "Full-time", value: "full-time" },
@@ -39,6 +44,7 @@ export const Jobs: CollectionConfig = {
         {
           name: "workMode",
           type: "select",
+          label: "Work mode",
           defaultValue: "onsite",
           options: [
             { label: "On-site", value: "onsite" },
@@ -48,28 +54,38 @@ export const Jobs: CollectionConfig = {
         },
       ],
     },
-    { name: "summary", type: "textarea", required: true, admin: { description: "One or two lines shown in the list." } },
+    { name: "summary", type: "textarea", label: "Short description", required: true, admin: { description: "One or two lines shown in the list of roles." } },
     {
       name: "responsibilities",
       type: "array",
-      fields: [{ name: "item", type: "text", required: true }],
+      label: "What you'll do",
+      labels: { singular: "Responsibility", plural: "Responsibilities" },
+      fields: [{ name: "item", type: "text", label: "Responsibility", required: true }],
     },
     {
       name: "requirements",
       type: "array",
-      fields: [{ name: "item", type: "text", required: true }],
+      label: "What we're looking for",
+      labels: { singular: "Requirement", plural: "Requirements" },
+      fields: [{ name: "item", type: "text", label: "Requirement", required: true }],
     },
     {
       name: "status",
       type: "select",
+      label: "Status",
       defaultValue: "open",
       options: [
         { label: "Open", value: "open" },
         { label: "Closed", value: "closed" },
       ],
-      admin: { position: "sidebar" },
+      admin: {
+        position: "sidebar",
+        description: "Only open roles appear on the website.",
+        components: statusCell({ open: "success", closed: "light-gray" }),
+      },
     },
-    { name: "order", type: "number", defaultValue: 100, admin: { position: "sidebar" } },
+    slugField("title", "job title"),
+    { name: "order", type: "number", label: "Display order", defaultValue: 100, admin: { position: "sidebar", description: "Lower numbers come first." } },
   ],
 };
 
@@ -77,32 +93,51 @@ export const Jobs: CollectionConfig = {
 export const JobApplications: CollectionConfig = {
   slug: "job-applications",
   labels: { singular: "Application", plural: "Applications" },
-  admin: { useAsTitle: "name", defaultColumns: ["name", "job", "status", "createdAt"], group: "Careers" },
+  admin: {
+    useAsTitle: "name",
+    defaultColumns: ["name", "job", "status", "createdAt"],
+    listSearchableFields: ["name", "email"],
+    group: "Careers",
+    description: "Sent from the Career page. The candidate's details are locked; use the status and notes to track the process.",
+  },
   defaultSort: "-createdAt",
   access: { create: () => false, read: hrTeam, update: hrTeam, delete: admins },
   fields: [
+    { name: "job", type: "relationship", label: "Applied for", relationTo: "jobs", admin: { description: "Empty when they applied without picking a role." } },
     {
-      type: "row",
+      type: "collapsible",
+      label: "Candidate",
       fields: [
         {
-          name: "status",
-          type: "select",
-          defaultValue: "new",
-          options: ["new", "reviewing", "interview", "offer", "rejected"].map((v) => ({ label: v[0].toUpperCase() + v.slice(1), value: v })),
+          type: "row",
+          fields: [
+            { name: "name", type: "text", label: "Name", required: true, admin: { readOnly: true } },
+            { name: "email", type: "email", label: "Email", required: true, admin: { readOnly: true } },
+            { name: "phone", type: "text", label: "Phone", admin: { readOnly: true } },
+          ],
         },
-        { name: "job", type: "relationship", relationTo: "jobs" },
+        { name: "portfolio", type: "text", label: "CV / portfolio link", required: true, admin: { readOnly: true } },
+        { name: "message", type: "textarea", label: "Message", admin: { readOnly: true } },
       ],
     },
     {
-      type: "row",
-      fields: [
-        { name: "name", type: "text", required: true },
-        { name: "email", type: "email", required: true },
-        { name: "phone", type: "text" },
+      name: "status",
+      type: "select",
+      label: "Stage",
+      defaultValue: "new",
+      options: [
+        { label: "New", value: "new" },
+        { label: "Reviewing", value: "reviewing" },
+        { label: "Interview", value: "interview" },
+        { label: "Offer", value: "offer" },
+        { label: "Rejected", value: "rejected" },
       ],
+      admin: {
+        position: "sidebar",
+        description: "New → Reviewing → Interview → Offer, or Rejected.",
+        components: statusCell({ new: "warning", reviewing: "light", interview: "dark", offer: "success", rejected: "light-gray" }),
+      },
     },
-    { name: "portfolio", type: "text", label: "CV / portfolio link", required: true },
-    { name: "message", type: "textarea" },
-    { name: "notes", type: "textarea", admin: { position: "sidebar" } },
+    { name: "notes", type: "textarea", label: "Internal notes", admin: { position: "sidebar", description: "Only HR and admins see this." } },
   ],
 };

@@ -24,8 +24,39 @@ export default buildConfig({
     user: Users.slug,
     importMap: { baseDir: path.resolve(dirname) },
     meta: { titleSuffix: " · MIL Digital CMS" },
+    dateFormat: "d MMM yyyy, HH:mm",
+    // Always the light MIL theme (custom.scss); no dark-mode toggle.
+    theme: "light",
+    components: {
+      // Live preview: fits the desktop page into the pane, and opens the form tab for a section clicked in the preview.
+      providers: ["/components/admin/PreviewBridge#PreviewBridge"],
+      graphics: {
+        Logo: "/components/admin/Graphics#Logo",
+        Icon: "/components/admin/Graphics#Icon",
+      },
+      // Brand block, then Website → Homepage at the top of the menu
+      // (globals are otherwise listed last).
+      beforeNavLinks: ["/components/admin/NavBrand#NavBrand", "/components/admin/WebsiteNav#WebsiteNav"],
+      beforeDashboard: ["/components/admin/Dashboard#Dashboard"],
+    },
+    // Split-screen preview next to the edit form: the real page, updating
+    // as the editor types (routes in src/app/(frontend)/preview).
+    livePreview: {
+      collections: ["case-studies", "articles", "reports", "jobs", "testimonials", "clients"],
+      globals: ["home"],
+      openByDefault: true,
+      // Unsaved documents have no id yet; the preview appears after the first save.
+      url: ({ data, collectionConfig, globalConfig }) =>
+        globalConfig?.slug === "home" ? "/preview/home" : collectionConfig && data?.id ? `/preview/${collectionConfig.slug}/${data.id}` : null,
+      // "Responsive" (the default) shows the full desktop page scaled to the pane.
+      breakpoints: [
+        { label: "Tablet", name: "tablet", width: 834, height: 1112 },
+        { label: "Mobile", name: "mobile", width: 390, height: 844 },
+      ],
+    },
   },
-  collections: [CaseStudies, Clients, Testimonials, Articles, Reports, Jobs, Leads, JobApplications, Media, Users],
+  // Menu order: Website (above), Portfolio, Insights, Careers, Leads, Library, Administration.
+  collections: [CaseStudies, Clients, Testimonials, Articles, Reports, Jobs, JobApplications, Leads, Media, Users],
   globals: [Home],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || "",

@@ -4,6 +4,7 @@ import type { Metadata } from 'next'
 
 import config from '@payload-config'
 import { RootPage, generatePageMetadata } from '@payloadcms/next/views'
+import { connection } from 'next/server'
 import { importMap } from '../importMap'
 
 type Args = {
@@ -15,10 +16,20 @@ type Args = {
   }>
 }
 
-export const generateMetadata = ({ params, searchParams }: Args): Promise<Metadata> =>
-  generatePageMetadata({ config, params, searchParams })
+// MIL edit (cacheComponents): admin pages read the URL and the session on
+// every request, so they are allowed to block (see the layout above).
+export const instant = false
 
-const Page = ({ params, searchParams }: Args) =>
-  RootPage({ config, params, searchParams, importMap })
+// connection() first: Next renders the page alongside the layout, so each
+// needs its own signal that it runs at request time.
+export const generateMetadata = async ({ params, searchParams }: Args): Promise<Metadata> => {
+  await connection()
+  return generatePageMetadata({ config, params, searchParams })
+}
+
+const Page = async ({ params, searchParams }: Args) => {
+  await connection()
+  return RootPage({ config, params, searchParams, importMap })
+}
 
 export default Page

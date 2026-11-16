@@ -6,6 +6,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import type { HomeData } from "@/lib/cms";
 import { Reveal } from "@/components/motion/reveal";
+import { HOME_COPY } from "@/content/home-copy";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 // Client logos by company name, for the quote card (from the marquee set).
@@ -15,7 +16,7 @@ const LOGOS: Record<string, string> = { LYLA: "/clients/lyla.png" };
  * Chapter 9 (inventory: testimonials). One large quote at a time; arrows
  * appear once the CMS holds more than one testimonial.
  */
-export function Testimonials({ testimonials }: { testimonials: HomeData["testimonials"] }) {
+export function Testimonials({ testimonials, label = HOME_COPY.testimonials.label }: { testimonials: HomeData["testimonials"]; label?: string }) {
   const [i, setI] = React.useState(0);
   const t = testimonials[i % Math.max(testimonials.length, 1)];
   if (!t) return null;
@@ -23,10 +24,10 @@ export function Testimonials({ testimonials }: { testimonials: HomeData["testimo
   const logo = LOGOS[t.company];
 
   return (
-    <section data-ground="#0e1f45" className="sec" aria-label="Client stories">
+    <section data-cms="testimonials" data-ground="#0e1f45" className="sec" aria-label="Client stories">
       <div className="container-x">
         <div className="flex items-end justify-between gap-6">
-          <p className="t-label">What our Milers say</p>
+          <p className="t-label">{label}</p>
           {many ? (
             <div className="flex gap-2">
               {[-1, 1].map((d) => (

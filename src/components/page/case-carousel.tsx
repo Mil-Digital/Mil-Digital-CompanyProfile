@@ -57,7 +57,7 @@ export function CaseCarousel({
   };
 
   return (
-    <section id="work" data-ground={theme === "dark" ? "#0e1f45" : undefined} className={cn("sec overflow-hidden", theme === "light" && "theme-light")} aria-label={label}>
+    <section id="work" data-cms="work" data-ground={theme === "dark" ? "#0e1f45" : undefined} className={cn("sec overflow-hidden", theme === "light" && "theme-light")} aria-label={label}>
       <div className="container-x">
         <div className="mb-10 grid gap-6 md:grid-cols-12 md:items-end">
           <div className="md:col-span-6">

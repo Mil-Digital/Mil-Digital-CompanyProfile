@@ -1,5 +1,6 @@
 import { ArrowUpRight } from "lucide-react";
 import { site } from "@/content/site";
+import { HOME_COPY, type HomeCopy } from "@/content/home-copy";
 import { whatsappHref } from "@/lib/whatsapp";
 import { BriefPaper } from "@/components/brief/brief-paper";
 import { Reveal } from "@/components/motion/reveal";
@@ -15,18 +16,15 @@ const channels = [
  * Chapter 11 (inventory: contact-us form). The Brief MIL paper sits on the
  * page; the same paper slides up from every "Book a consultation" button.
  */
-export function Contact() {
+export function Contact({ copy = HOME_COPY.contact }: { copy?: HomeCopy["contact"] }) {
   return (
-    <section id="contact" data-ground="#0e1f45" className="sec" aria-label="Contact">
+    <section id="contact" data-cms="contact" data-ground="#0e1f45" className="sec" aria-label="Contact">
       <div className="container-x grid gap-14 lg:grid-cols-12">
         <div className="lg:col-span-4">
-          <p className="t-label">Contact us</p>
-          <SplitText as="h2" text={"Tell us about\nyour brand."} className="t-h2 mt-4" />
+          <p className="t-label">{copy.label}</p>
+          <SplitText as="h2" text={copy.title} className="t-h2 mt-4" />
           <Reveal>
-            <p className="t-body mt-6 text-fg-2">
-              Fill in this short brief for a free 1x consultation with our certified experts. We continue the conversation on
-              WhatsApp or email.
-            </p>
+            <p className="t-body mt-6 text-fg-2">{copy.intro}</p>
             <ul className="mt-10 border-t border-line">
               {channels.map((c) => (
                 <li key={c.label}>

@@ -4,6 +4,7 @@ import * as React from "react";
 import Image from "next/image";
 import { AnimatePresence, motion, useInView } from "motion/react";
 import { ceo } from "@/content/site";
+import { HOME_COPY, type HomeCopy } from "@/content/home-copy";
 import { cn } from "@/lib/utils";
 import { CtaLink } from "@/components/ui/cta-link";
 import { SplitText } from "@/components/motion/split-text";
@@ -47,7 +48,7 @@ function Person({ p, i, active, onPick }: { p: (typeof PEOPLE)[number]; i: numbe
  * or scrolling past a name swaps the photo and caption. Links to Our Team
  * and Career.
  */
-export function Team({ variant = "home" }: { variant?: "home" | "page" }) {
+export function Team({ variant = "home", copy = HOME_COPY.team }: { variant?: "home" | "page"; copy?: HomeCopy["team"] }) {
   const [active, setActive] = React.useState(0);
   const held = React.useRef(0);
   const pick = React.useCallback((i: number, fromScroll?: boolean) => {
@@ -63,6 +64,7 @@ export function Team({ variant = "home" }: { variant?: "home" | "page" }) {
       className={cn("sec", variant === "home" && "theme-light")}
       data-ground={variant === "page" ? "#0e1f45" : undefined}
       aria-label="Our team"
+      data-cms={variant === "home" ? "team" : undefined}
     >
       <div className="container-x grid gap-12 lg:grid-cols-12 lg:items-start">
         <div className="lg:sticky lg:top-28 lg:col-span-5">
@@ -86,12 +88,9 @@ export function Team({ variant = "home" }: { variant?: "home" | "page" }) {
         </div>
 
         <div className="lg:col-span-6 lg:col-start-7">
-          <p className="t-label">{variant === "page" ? "Team by function" : "The team"}</p>
-          <SplitText as="h2" text={variant === "page" ? "Who does what." : "The people behind\nthe numbers."} className="t-h2 mt-4" />
-          <p className="t-body mt-6 text-fg-2">
-            15 certified digital marketing experts with 7 years of combined experience, growing brands across Indonesia from
-            Bandung.
-          </p>
+          <p className="t-label">{variant === "page" ? "Team by function" : copy.label}</p>
+          <SplitText as="h2" text={variant === "page" ? "Who does what." : copy.title} className="t-h2 mt-4" />
+          <p className="t-body mt-6 text-fg-2">{variant === "page" ? HOME_COPY.team.intro : copy.intro}</p>
           <ul className="mt-10 border-t border-line">
             {PEOPLE.map((person, i) => (
               <Person key={person.name} p={person} i={i} active={i === active} onPick={pick} />

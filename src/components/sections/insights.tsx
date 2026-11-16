@@ -3,6 +3,7 @@ import type { HomeData } from "@/lib/cms";
 import { TextLink } from "@/components/ui/cta-link";
 import { ImageGallery, type GalleryItem } from "@/components/ui/image-gallery";
 import { SplitText } from "@/components/motion/split-text";
+import { HOME_COPY, type HomeCopy } from "@/content/home-copy";
 
 const card = "block border border-line bg-surface/90 p-5 shadow-[0_20px_40px_-24px_rgb(0_0_0/0.45)] backdrop-blur-xl";
 
@@ -11,7 +12,7 @@ const card = "block border border-line bg-surface/90 p-5 shadow-[0_20px_40px_-24
  * latest articles as an expanding gallery; the hovered panel opens with a
  * short card. Panels shutter open in sequence on arrival.
  */
-export function Insights({ insights }: { insights: HomeData["insights"] }) {
+export function Insights({ insights, copy = HOME_COPY.insights }: { insights: HomeData["insights"]; copy?: HomeCopy["insights"] }) {
   const { articles, report } = insights;
 
   const items: GalleryItem[] = [
@@ -65,12 +66,12 @@ export function Insights({ insights }: { insights: HomeData["insights"] }) {
   ];
 
   return (
-    <section className="theme-light sec" aria-label="Insights and reports">
+    <section data-cms="insights" className="theme-light sec" aria-label="Insights and reports">
       <div className="container-x">
         <div className="mb-12 grid gap-6 md:grid-cols-12 md:items-end">
           <div className="md:col-span-7">
-            <p className="t-label">Insights &amp; reports</p>
-            <SplitText as="h2" text={"Thinking out loud,\nwith receipts."} className="t-h2 mt-4" />
+            <p className="t-label">{copy.label}</p>
+            <SplitText as="h2" text={copy.title} className="t-h2 mt-4" />
           </div>
           <div className="grid justify-items-start gap-5 md:col-span-4 md:col-start-9 md:justify-items-end md:text-right">
             <p className="t-body text-fg-2">Playbooks, points of view and industry research from the MIL team.</p>

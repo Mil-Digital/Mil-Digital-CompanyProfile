@@ -5,6 +5,7 @@ import Image from "next/image";
 import { motion, useScroll, useTransform } from "motion/react";
 import { services, type Service } from "@/content/home";
 import { site } from "@/content/site";
+import { HOME_COPY, type HomeCopy } from "@/content/home-copy";
 import { TextLink } from "@/components/ui/cta-link";
 import { BriefTrigger } from "@/components/brief/brief-provider";
 import { Reveal } from "@/components/motion/reveal";
@@ -60,18 +61,15 @@ function Panel({ s, i, next }: { s: Service; i: number; next: React.RefObject<HT
  * slides over the one before; the covered panel dims and sinks back.
  * Every panel opens the Brief with that service already ticked.
  */
-export function Services() {
+export function Services({ copy = HOME_COPY.services }: { copy?: HomeCopy["services"] }) {
   const refs = [React.useRef<HTMLElement>(null), React.useRef<HTMLElement>(null), React.useRef<HTMLElement>(null)];
 
   return (
-    <section className="theme-light" aria-label="Our services">
+    <section data-cms="services" className="theme-light" aria-label="Our services">
       <div className="container-x grid gap-8 pb-14 pt-[var(--sec)] md:grid-cols-12">
-        <SplitText as="h2" text={"Three disciplines,\none growth team."} className="t-h2 md:col-span-6" />
+        <SplitText as="h2" text={copy.title} className="t-h2 md:col-span-6" />
         <Reveal className="md:col-span-5 md:col-start-8 md:self-end">
-          <p className="t-body text-fg-2">
-            Start anywhere: a strategy audit, a campaign that needs to perform, or content that needs to stand out. The same
-            team carries it from first plan to the numbers.
-          </p>
+          <p className="t-body text-fg-2">{copy.intro}</p>
         </Reveal>
       </div>
 

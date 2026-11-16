@@ -25,17 +25,14 @@ npm run build                # build produksi
 
 ## CMS (Payload)
 
-- Buka `/admin`. Akun pertama yang dibuat otomatis menjadi **Admin**; akun berikutnya dibuat dari menu Users (role: Admin, Editor, HR, Sales).
-- **Pages → Homepage**: hero (judul, teks, foto background), journey film & milestone, stats, case study unggulan, galeri, report unggulan.
-- **Portfolio**: Case studies, Clients (logo marquee), Testimonials. **Insights**: Articles, Reports. **Library**: Media.
-- Foto hero: upload di Homepage → Hero → Background image. Atur titik fokus foto di Media (klik bagian yang harus tetap terlihat).
-- Setiap kali disimpan, halaman terkait langsung diperbarui (cache di-expire otomatis).
-- Koleksi baru: **Jobs** & **Applications** (menu Careers, role HR). Lead kini juga datang dari quiz, download report dan waitlist ATLAS.
-- `npm run seed` mengisi CMS kosong dengan konten awal dari `src/content/home.ts`; `npm run payload run src/seed/company-data.ts` menerapkan data asli MIL (foto tim, stats, testimoni, artikel) ke CMS yang sudah di-seed.
-- `npm run generate:types` setelah mengubah skema di `src/collections` / `src/globals`.
+- Buka `/admin`. Akun pertama otomatis menjadi **Admin**; akun berikutnya dibuat dari **Administration → Users** (role: Admin, Editor, HR, Sales).
+- Panduan pemakaian untuk tim (menu, draft & publish, leads, gambar): **[docs/CMS_GUIDE.md](docs/CMS_GUIDE.md)**.
+- Setiap kali konten disimpan atau dipublish, halaman terkait langsung diperbarui (cache di-expire otomatis).
+- Media disimpan di Vercel Blob bila `BLOB_READ_WRITE_TOKEN` diisi; tanpa token, di folder lokal `media/`. `npm run media:push` menyalin isi `media/` ke Blob.
+- `npm run generate:types` setelah mengubah skema; `npm run generate:importmap` setelah menambah komponen admin.
 - `npm run dev` otomatis me-restart server saat `payload.config.ts`, `src/collections`, `src/globals` atau `src/payload` berubah. Hot reload Turbopack pada file-file itu membuat referensi editor Lexical basi (error "module factory is not available"); `npm run dev:raw` menjalankan next dev biasa.
-
-> File upload saat ini disimpan di folder lokal `media/` (tidak ikut Git). Database ada di Neon, jadi data teks terlihat di semua mesin, tapi file gambarnya hanya ada di mesin yang mengunggah. Sebelum deploy, pindahkan ke cloud storage (mis. Vercel Blob).
+- Database dipakai bersama oleh lokal dan live: perubahan skema langsung berlaku di database production. Jalankan `npm run db:push` dan baca peringatannya sebelum menyetujui.
+- `npm run seed` hanya untuk database kosong (jangan di production).
 
 ## Struktur singkat
 

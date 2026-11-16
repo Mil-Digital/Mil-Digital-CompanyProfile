@@ -1,8 +1,6 @@
-import type { Access, CollectionConfig } from "payload";
-import { admins } from "@/payload/access";
-
-const salesTeam: Access = ({ req }) =>
-  Boolean((req.user as { roles?: string[] } | null)?.roles?.some((r) => r === "admin" || r === "sales"));
+import type { CollectionConfig } from "payload";
+import { admins, salesTeam } from "@/payload/access";
+import { statusCell } from "@/payload/fields";
 
 export const ACTIVITIES = ["Advertising", "Social Media", "Branding", "Influencer", "Others"] as const;
 export const SERVICES = ["Consultation", "Advertising", "Creative", "Not sure yet"] as const;
@@ -17,78 +15,113 @@ export const Leads: CollectionConfig = {
   admin: {
     useAsTitle: "name",
     defaultColumns: ["name", "brandName", "source", "status", "createdAt"],
+    listSearchableFields: ["name", "email", "phone", "brandName"],
     group: "Leads",
-    description: "Free consultation requests. Update the status as you follow up.",
+    description:
+      "Everyone who sent a brief, took the quiz, downloaded a report or joined the ATLAS waitlist. Move the status along as you follow up, and keep notes in the sidebar.",
   },
   defaultSort: "-createdAt",
   access: { create: () => false, read: salesTeam, update: salesTeam, delete: admins },
   fields: [
     {
-      type: "row",
+      type: "collapsible",
+      label: "Contact",
       fields: [
         {
-          name: "status",
-          type: "select",
-          defaultValue: "new",
-          options: ["new", "contacted", "qualified", "won", "lost"].map((v) => ({
-            label: v[0].toUpperCase() + v.slice(1),
-            value: v,
-          })),
-        },
-        {
-          name: "source",
-          type: "select",
-          defaultValue: "contact-form",
-          options: [
-            { label: "Contact form", value: "contact-form" },
-            { label: "Brand quiz", value: "quiz" },
-            { label: "Booking", value: "booking" },
-            { label: "Report download", value: "report" },
-            { label: "ATLAS waitlist", value: "atlas-waitlist" },
+          type: "row",
+          fields: [
+            { name: "name", type: "text", label: "Name", required: true },
+            { name: "email", type: "email", label: "Email", required: true },
+            { name: "phone", type: "text", label: "Phone / WhatsApp" },
           ],
         },
       ],
     },
     {
-      type: "row",
+      type: "collapsible",
+      label: "Brand",
       fields: [
-        { name: "name", type: "text", required: true },
-        { name: "email", type: "email", required: true },
-        { name: "phone", type: "text", label: "Phone / WhatsApp" },
+        {
+          type: "row",
+          fields: [
+            { name: "brandName", type: "text", label: "Brand" },
+            { name: "industry", type: "text", label: "Industry" },
+            { name: "location", type: "text", label: "Location" },
+          ],
+        },
       ],
     },
     {
-      type: "row",
+      type: "collapsible",
+      label: "What they need",
       fields: [
-        { name: "brandName", type: "text" },
-        { name: "industry", type: "text" },
-        { name: "location", type: "text" },
+        {
+          name: "services",
+          type: "select",
+          hasMany: true,
+          label: "Services needed",
+          options: SERVICES.map((s) => ({ label: s, value: s })),
+        },
+        {
+          type: "row",
+          fields: [
+            { name: "budget", type: "text", label: "Monthly ad budget" },
+            {
+              name: "activities",
+              type: "select",
+              hasMany: true,
+              label: "Digital marketing tried",
+              options: ACTIVITIES.map((a) => ({ label: a, value: a })),
+            },
+          ],
+        },
+        { name: "message", type: "textarea", label: "What they want to discuss" },
+        {
+          name: "quizAnswers",
+          type: "textarea",
+          label: "Brand quiz answers",
+          admin: { description: "Filled in when the visitor took the brand quiz first.", condition: (data) => Boolean(data?.quizAnswers) },
+        },
       ],
     },
+    // Sidebar: the follow-up
     {
-      name: "services",
+      name: "status",
       type: "select",
-      hasMany: true,
-      label: "Services needed",
-      options: SERVICES.map((s) => ({ label: s, value: s })),
+      label: "Follow-up status",
+      defaultValue: "new",
+      options: [
+        { label: "New", value: "new" },
+        { label: "Contacted", value: "contacted" },
+        { label: "Qualified", value: "qualified" },
+        { label: "Won", value: "won" },
+        { label: "Lost", value: "lost" },
+      ],
+      admin: {
+        position: "sidebar",
+        description: "New → Contacted → Qualified → Won or Lost.",
+        components: statusCell({ new: "warning", contacted: "light", qualified: "dark", won: "success", lost: "light-gray" }),
+      },
     },
-    { name: "budget", type: "text", label: "Advertising budget" },
+    { name: "notes", type: "textarea", label: "Internal notes", admin: { position: "sidebar", description: "Only the sales team sees this." } },
     {
-      name: "activities",
+      name: "source",
       type: "select",
-      hasMany: true,
-      label: "Digital marketing tried",
-      options: ACTIVITIES.map((a) => ({ label: a, value: a })),
+      label: "Came from",
+      defaultValue: "contact-form",
+      options: [
+        { label: "Contact form", value: "contact-form" },
+        { label: "Brand quiz", value: "quiz" },
+        { label: "Booking", value: "booking" },
+        { label: "Report download", value: "report" },
+        { label: "ATLAS waitlist", value: "atlas-waitlist" },
+      ],
+      admin: {
+        position: "sidebar",
+        components: statusCell({ "contact-form": "light", quiz: "light", booking: "light", report: "light", "atlas-waitlist": "light" }),
+      },
     },
-    { name: "message", type: "textarea", label: "What they want to discuss" },
-    {
-      name: "quizAnswers",
-      type: "textarea",
-      label: "Brand quiz answers",
-      admin: { description: "Filled when the visitor took the brand quiz before sending a brief." },
-    },
-    { name: "reference", type: "text", admin: { description: "Report or page the lead came from.", position: "sidebar" } },
-    { name: "pageOrigin", type: "text", admin: { readOnly: true, position: "sidebar" } },
-    { name: "notes", type: "textarea", admin: { position: "sidebar", description: "Internal follow-up notes." } },
+    { name: "reference", type: "text", label: "Report or offer", admin: { position: "sidebar", description: "e.g. the report they downloaded." } },
+    { name: "pageOrigin", type: "text", label: "Sent from page", admin: { readOnly: true, position: "sidebar" } },
   ],
 };

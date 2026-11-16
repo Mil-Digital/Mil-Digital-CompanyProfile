@@ -3,7 +3,8 @@
 import * as React from "react";
 import Image from "next/image";
 import { motion, useInView, useScroll, useTransform, type MotionValue } from "motion/react";
-import { brand, type Stat } from "@/content/home";
+import type { Stat } from "@/content/home";
+import { HOME_COPY, type HomeCopy } from "@/content/home-copy";
 import { MARK_SHAPES } from "@/components/ui/brand-graphics";
 import { ScrollFill } from "@/components/page/scroll-fill";
 import { TextLink } from "@/components/ui/cta-link";
@@ -78,7 +79,7 @@ function StatRow({ stat }: { stat: Stat }) {
  * three shapes the logo is built from (graph, people, scaling; Brand Book
  * 2025) slide together into the MIL mark.
  */
-export function Studio() {
+export function Studio({ copy = HOME_COPY.about }: { copy?: HomeCopy["about"] }) {
   const markRef = React.useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: markRef, offset: ["start end", "center 0.55"] });
   const graphX = useTransform(scrollYProgress, [0.2, 1], [-30, 0]);
@@ -86,16 +87,16 @@ export function Studio() {
   const peopleY = useTransform(scrollYProgress, [0.2, 1], [-14, 0]);
 
   return (
-    <section className="theme-light sec" aria-label="About MIL Digital">
+    <section data-cms="about" className="theme-light sec" aria-label="About MIL Digital">
       <div className="container-x grid gap-16 lg:grid-cols-12 lg:items-center">
         <div className="lg:col-span-7">
-          <p className="t-label">About MIL Digital</p>
+          <p className="t-label">{copy.label}</p>
           <ScrollFill
             className="t-statement mt-8 max-w-[22ch]"
-            text="We're not just an agency. We're your partner in growth, combining strategy and execution so your brand reaches its next milestone."
+            text={copy.statement}
           />
           <div className="mt-10">
-            <TextLink href="/about-mil-digital">About MIL Digital</TextLink>
+            <TextLink href="/about-mil-digital">{copy.linkLabel}</TextLink>
           </div>
         </div>
 
@@ -120,8 +121,8 @@ export function Studio() {
             MIL comes from <span className="text-signal">MIL</span>estone
           </p>
           <dl className="mt-4 grid grid-cols-3 gap-4 border-t border-line pt-5">
-            {brand.logoMeaning.map((m) => (
-              <div key={m.title}>
+            {copy.pillars.map((m, i) => (
+              <div key={i}>
                 <dt className="font-display text-lg font-semibold text-heading">{m.title}</dt>
                 <dd className="mt-1 text-[13px] leading-snug text-fg-2">{m.body}</dd>
               </div>
@@ -139,7 +140,7 @@ export function StudioNumbers({ stats, wheel }: { stats: Stat[]; wheel: string[]
   const { scrollYProgress: flow } = useScroll({ target: flowRef, offset: ["start end", "end end"] });
 
   return (
-    <section className="theme-light" aria-label="MIL in numbers">
+    <section data-cms="numbers" className="theme-light" aria-label="MIL in numbers">
       <div ref={flowRef} className="relative">
         {/* A layer as tall as the chapter, with the wheel stuck to the viewport
             inside it, so the wheel can never outlive the chapter. */}
