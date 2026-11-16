@@ -281,7 +281,8 @@ $mil-nav-icons: (
 @media (min-width: 769px) {
   /* Payload's arrow hides the whole menu; the rail and the pin button
      replace it, so it only shows to bring back a fully hidden menu. */
-  .template-default--nav-open .template-default__nav-toggler-wrapper {
+  .template-default--nav-open .template-default__nav-toggler-wrapper,
+  .nav .nav__header {
     display: none;
   }
 
@@ -295,7 +296,8 @@ $mil-nav-icons: (
   /* The menu slides open over the page; the page itself never moves, so
      form fields are not re-wrapped while it animates. */
   .nav {
-    z-index: 5;
+    /* above the page's top bar (breadcrumb, z-index 30) while it slides over */
+    z-index: 31;
     transition:
       width 0.45s var(--mil-ease),
       box-shadow 0.45s var(--mil-ease);
