@@ -248,7 +248,88 @@ $mil-nav-icons: (
   }
 }
 
-/* ── Sidebar rail: opens on hover, pin to keep open (NavBrandClient) ── */
+/* "Keep menu open" row: lined up with the menu items, switch on the right */
+.mil-nav-pin {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  width: 100%;
+  min-height: 38px;
+  margin: -8px 0 20px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 11px;
+  background: transparent;
+  color: var(--nav-muted);
+  font: inherit;
+  font-size: 13.5px;
+  font-weight: 500;
+  white-space: nowrap;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background-color 0.25s var(--mil-ease),
+    color 0.25s var(--mil-ease);
+
+  &:hover {
+    color: #fff;
+    background: rgb(255 255 255 / 0.08);
+  }
+
+  &:focus-visible {
+    outline: var(--accessibility-outline);
+  }
+
+  &__icon {
+    flex-shrink: 0;
+    transition: transform 0.3s var(--mil-ease);
+  }
+
+  &[aria-checked="true"] &__icon {
+    color: #7fdcff;
+    transform: rotate(-35deg);
+  }
+
+  &__label {
+    flex: 1;
+  }
+
+  /* the switch */
+  &__switch {
+    position: relative;
+    flex-shrink: 0;
+    width: 32px;
+    height: 18px;
+    border-radius: 999px;
+    background: rgb(255 255 255 / 0.16);
+    transition:
+      background-color 0.3s var(--mil-ease),
+      opacity 0.3s var(--mil-ease) 0.15s;
+
+    &::after {
+      content: "";
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 1px 4px rgb(0 0 0 / 0.3);
+      transition: transform 0.3s var(--mil-ease);
+    }
+  }
+
+  &[aria-checked="true"] &__switch {
+    background: var(--mil-sky);
+
+    &::after {
+      transform: translateX(14px);
+    }
+  }
+}
+
+/* ── Sidebar rail: opens on hover, "Keep menu open" pins it (NavBrandClient) ── */
 
 .mil-sr-only {
   position: absolute;
@@ -279,9 +360,9 @@ $mil-nav-icons: (
 }
 
 @media (min-width: 769px) {
-  /* Payload's arrow hides the whole menu; the rail and the pin button
-     replace it, so it only shows to bring back a fully hidden menu. */
-  .template-default--nav-open .template-default__nav-toggler-wrapper,
+  /* Payload's arrow box hides the whole menu; the rail and the "Keep menu
+     open" switch replace it, so it only shows to bring back a hidden menu. */
+  .template-default__nav-toggler-wrapper:has(.nav-toggler--is-open),
   .nav .nav__header {
     display: none;
   }
@@ -304,6 +385,7 @@ $mil-nav-icons: (
   }
 
   .nav__link,
+  .mil-nav-pin,
   .mil-nav-brand,
   .mil-nav-brand__site {
     overflow: hidden;
@@ -320,7 +402,8 @@ $mil-nav-icons: (
   .nav-group__indicator,
   .mil-nav-brand__name,
   .mil-nav-brand__site-label,
-  .mil-nav-brand__toggle {
+  .mil-nav-pin__label,
+  .mil-nav-pin__switch {
     transition:
       opacity 0.3s var(--mil-ease) 0.15s,
       color 0.3s var(--mil-ease) 0.15s,
@@ -360,7 +443,8 @@ $mil-nav-icons: (
       .nav-group__indicator,
       .mil-nav-brand__name,
       .mil-nav-brand__site-label,
-      .mil-nav-brand__toggle {
+      .mil-nav-pin__label,
+      .mil-nav-pin__switch {
         opacity: 0;
         transition-duration: 0.12s;
         transition-delay: 0s;
